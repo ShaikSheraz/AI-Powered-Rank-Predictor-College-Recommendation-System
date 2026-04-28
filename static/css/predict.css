@@ -1,0 +1,280 @@
+/* Main container */
+.predict-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.prediction-form {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* Step indicator styles */
+.step-indicator {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.step {
+    text-align: center;
+    flex: 1;
+}
+
+.step-number {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #6c757d;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 0.5rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.step.active .step-number {
+    background: #007bff;
+}
+
+.step.completed .step-number {
+    background: #28a745;
+}
+
+.step div:last-child {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.step.active div:last-child {
+    color: #007bff;
+}
+
+.step.completed div:last-child {
+    color: #28a745;
+}
+
+/* Form step styles */
+.form-step {
+    display: none;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.form-step.active {
+    display: block;
+}
+
+.navigation-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+}
+
+/* Button styles */
+.btn-predict {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 50px;
+}
+
+/* Dropdown help text */
+.dropdown-help {
+    font-size: 0.875rem;
+}
+
+/* Autocomplete Styles */
+.college-search-container {
+    position: relative;
+}
+
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 0 0 5px 5px;
+}
+
+.autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+    font-size: 14px;
+}
+
+.autocomplete-items div:hover {
+    background-color: #e9ecef;
+}
+
+.autocomplete-active {
+    background-color: #007bff !important;
+    color: white;
+}
+
+.loading-spinner {
+    display: none;
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+}
+
+/* Prediction Result Styles */
+.prediction-result {
+    animation: fadeIn 0.5s ease-in;
+}
+
+.result-card {
+    padding: 2rem;
+    border-radius: 10px;
+    color: white;
+}
+
+.result-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.result-danger {
+    background: linear-gradient(135deg, #dc3545, #e83e8c);
+}
+
+.probability-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.details-section {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 1rem;
+    border-radius: 5px;
+}
+
+.interpretation-guide {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 1rem;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.badge-success {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+}
+
+.badge-warning {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+}
+
+/* Form control focus styles */
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .predict-container {
+        padding: 0 15px;
+    }
+    
+    .prediction-form {
+        padding: 1.5rem;
+    }
+    
+    .step-indicator {
+        margin-bottom: 1.5rem;
+    }
+    
+    .step div:last-child {
+        font-size: 0.8rem;
+    }
+    
+    .navigation-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .navigation-buttons button {
+        width: 100%;
+    }
+    
+    .result-card {
+        padding: 1.5rem;
+    }
+    
+    .probability-value {
+        font-size: 2rem;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Mark highlight for search results */
+mark {
+    background-color: #fff3cd;
+    padding: 0;
+    font-weight: 600;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Success states */
+.success-message {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+/* Error states */
+.error-message {
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 10px;
+}

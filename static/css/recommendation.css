@@ -1,0 +1,615 @@
+/* Main container */
+.recommendation-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.recommendation-form {
+    background: #f8f9fa;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+    /* Ensure form is positioned normally */
+    position: static;
+}
+
+.btn-recommend {
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-recommend:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.recommendations-results {
+    animation: slideIn 0.5s ease-out;
+}
+
+.table-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    overflow: hidden;
+    margin-bottom: 2rem;
+}
+
+.recommendation-table {
+    margin: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.recommendation-table th {
+    border: none;
+    padding: 1rem;
+    font-weight: 600;
+    background: #2c3e50;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.recommendation-table td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #dee2e6;
+    transition: all 0.3s ease;
+}
+
+/* FIX: Complete row highlight on hover */
+.recommendation-row {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.recommendation-row:hover {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.recommendation-row:hover td {
+    background: transparent !important;
+}
+
+/* Category Badges */
+.category-badge {
+    padding: 0.4rem 0.9rem;
+    border-radius: 50px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+    text-align: center;
+    min-width: 100px;
+}
+
+.category-very-safe {
+    background-color: #28a745;
+    color: white;
+    border: 2px solid #218838;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+.category-safe {
+    background-color: #20c997;
+    color: white;
+    border: 2px solid #1ba87e;
+    box-shadow: 0 2px 4px rgba(32, 201, 151, 0.3);
+}
+
+.category-good {
+    background-color: #ffc107;
+    color: #212529;
+    border: 2px solid #e0a800;
+    box-shadow: 0 2px 4px rgba(255, 193, 7, 0.3);
+}
+
+.category-ambitious {
+    background-color: #fd7e14;
+    color: white;
+    border: 2px solid #e56a0c;
+    box-shadow: 0 2px 4px rgba(253, 126, 20, 0.3);
+}
+
+.category-very-ambitious {
+    background-color: #dc3545;
+    color: white;
+    border: 2px solid #c82333;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+.category-highly-ambitious {
+    background-color: #6f42c1;
+    color: white;
+    border: 2px solid #5a3596;
+    box-shadow: 0 2px 4px rgba(111, 66, 193, 0.3);
+}
+
+/* Enhanced Probability Styles */
+.probability-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    min-height: 40px;
+}
+
+.probability-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    min-width: 75px;
+    text-align: center;
+    border: 2px solid;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.prob-very-high {
+    background-color: #28a745;
+    color: white;
+    border-color: #218838;
+}
+
+.prob-high {
+    background-color: #20c997;
+    color: white;
+    border-color: #1ba87e;
+}
+
+.prob-medium {
+    background-color: #ffc107;
+    color: #212529;
+    border-color: #e0a800;
+}
+
+.prob-low {
+    background-color: #fd7e14;
+    color: white;
+    border-color: #e56a0c;
+}
+
+.prob-very-low {
+    background-color: #dc3545;
+    color: white;
+    border-color: #c82333;
+}
+
+.probability-bar {
+    flex-grow: 1;
+    height: 16px;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    min-width: 180px;
+    position: relative;
+    border: 1px solid #dee2e6;
+}
+
+.probability-fill {
+    height: 100%;
+    border-radius: 8px;
+    transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.2);
+    width: 0%;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Color gradients for probability bars */
+.probability-container[data-probability-level="very-high"] .probability-fill {
+    background: linear-gradient(90deg, #28a745, #34ce57, #51cf66);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+.probability-container[data-probability-level="high"] .probability-fill {
+    background: linear-gradient(90deg, #20c997, #38d9a9, #63e6be);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+.probability-container[data-probability-level="medium"] .probability-fill {
+    background: linear-gradient(90deg, #ffc107, #ffd43b, #ffe066);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+.probability-container[data-probability-level="low"] .probability-fill {
+    background: linear-gradient(90deg, #fd7e14, #fd9843, #fea563);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+.probability-container[data-probability-level="very-low"] .probability-fill {
+    background: linear-gradient(90deg, #dc3545, #e83e8c, #f06595);
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+/* Ensure the probability container is properly styled */
+.recommendation-table td:last-child {
+    min-width: 280px;
+}
+
+/* Animation for probability bars */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes fillProgress {
+    from {
+        width: 0%;
+        opacity: 0.7;
+    }
+    to {
+        width: var(--target-width);
+        opacity: 1;
+    }
+}
+
+/* FIX: Dropdown styling - FORCE BELOW OPENING */
+.form-control {
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+    background: white;
+    /* Remove any positioning that might affect dropdown */
+    position: static;
+    transform: none !important;
+}
+
+/* Simple dropdown styling - let browser handle it */
+select.form-control {
+    /* Remove ALL custom styling */
+    background-image: none !important;
+    background-position: unset !important;
+    background-repeat: unset !important;
+    background-size: unset !important;
+    appearance: menulist !important;
+    -webkit-appearance: menulist !important;
+    -moz-appearance: menulist !important;
+    padding-right: 1rem !important;
+    /* Ensure normal positioning */
+    position: static !important;
+    z-index: auto !important;
+    transform: none !important;
+}
+
+/* Remove focus transforms that might affect positioning */
+select.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.3rem rgba(0, 123, 255, 0.15);
+    transform: none !important; /* Remove translateY */
+}
+
+/* Category Explanation */
+.category-explanation {
+    margin-top: 2rem;
+}
+
+.explanation-card {
+    border: none;
+    border-radius: 12px;
+    height: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 3px solid transparent;
+    overflow: hidden;
+}
+
+.explanation-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+
+.very-safe-card {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border-color: #28a745;
+}
+
+.safe-card {
+    background: linear-gradient(135deg, #20c997, #17a2b8);
+    color: white;
+    border-color: #20c997;
+}
+
+.good-card {
+    background: linear-gradient(135deg, #ffc107, #ffb300);
+    color: #212529;
+    border-color: #ffc107;
+}
+
+.ambitious-card {
+    background: linear-gradient(135deg, #fd7e14, #e55e0c);
+    color: white;
+    border-color: #fd7e14;
+}
+
+.very-ambitious-card {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border-color: #dc3545;
+}
+
+.highly-ambitious-card {
+    background: linear-gradient(135deg, #6f42c1, #5a3596);
+    color: white;
+    border-color: #6f42c1;
+}
+
+.explanation-card .card-body {
+    padding: 1.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+.explanation-card h6 {
+    margin-bottom: 1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+}
+
+.explanation-card h6 i {
+    font-size: 1.2rem;
+}
+
+.college-name {
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 1rem;
+}
+
+.cutoff-value {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: #495057;
+    font-size: 1.1rem;
+    background: #f8f9fa;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.rank-difference {
+    font-weight: 600;
+}
+
+.rank-difference .text-success,
+.rank-difference .text-danger {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.rank-difference small {
+    font-size: 0.8rem;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Dropdown help text */
+.dropdown-help {
+    font-size: 0.875rem;
+    margin-top: 0.5rem;
+}
+
+/* Animations */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideInRow {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Loading animation for table rows */
+.recommendation-row {
+    animation: slideInRow 0.6s ease-out forwards;
+    opacity: 0;
+}
+
+/* Alert styles */
+.alert {
+    border-radius: 10px;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+    border-left: 4px solid #ffc107;
+}
+
+/* Print styles */
+@media print {
+    .recommendation-form,
+    .btn-secondary,
+    .category-explanation {
+        display: none;
+    }
+    
+    .recommendations-results {
+        animation: none;
+    }
+    
+    .table-container {
+        box-shadow: none;
+        border: 2px solid #dee2e6;
+    }
+    
+    .probability-bar {
+        background: #f8f9fa !important;
+    }
+    
+    .probability-fill {
+        background: #495057 !important;
+        animation: none !important;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .recommendation-container {
+        padding: 0 15px;
+    }
+    
+    .recommendation-form {
+        padding: 1.5rem;
+    }
+    
+    .probability-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .probability-bar {
+        width: 100%;
+        min-width: unset;
+        height: 14px;
+    }
+    
+    .recommendation-table {
+        font-size: 0.85rem;
+    }
+    
+    .recommendation-table th,
+    .recommendation-table td {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .recommendation-table td:last-child {
+        min-width: unset;
+    }
+    
+    .category-explanation .row {
+        gap: 15px;
+    }
+    
+    .explanation-card {
+        margin-bottom: 15px;
+    }
+    
+    .btn-recommend {
+        width: 100%;
+        padding: 1rem 2rem;
+    }
+    
+    .probability-badge {
+        font-size: 0.8rem;
+        min-width: 65px;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .category-badge {
+        min-width: 80px;
+        font-size: 0.75rem;
+        padding: 0.3rem 0.7rem;
+    }
+    
+    /* Mobile dropdown fix */
+    select.form-control {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .recommendation-table {
+        display: block;
+        overflow-x: auto;
+    }
+    
+    .recommendation-table th,
+    .recommendation-table td {
+        white-space: nowrap;
+        min-width: 120px;
+    }
+    
+    .college-name {
+        min-width: 200px;
+    }
+}
+
+/* CRITICAL FIX: Force dropdown to open below */
+.col-md-6 {
+    position: static !important; /* Remove any positioning context */
+    z-index: auto !important;
+}
+
+/* Remove any custom dropdown containers */
+.select-wrapper {
+    all: unset !important;
+    display: block !important;
+}
+
+/* Ensure the entire page has normal flow */
+body {
+    overflow-x: hidden;
+}
+
+.recommendation-container {
+    min-height: auto;
+}
+
+/* Remove the extra space at bottom - not needed with proper positioning */
+.recommendation-form {
+    margin-bottom: 2rem; /* Reset to normal */
+}
+
+/* ULTIMATE FIX: Force all dropdown containers to normal flow */
+.form-select,
+.select-container,
+.dropdown-container {
+    position: static !important;
+    z-index: auto !important;
+    transform: none !important;
+}
+
+/* Ensure no parent containers interfere */
+.recommendation-form .row {
+    position: static !important;
+    z-index: auto !important;
+}

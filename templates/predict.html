@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Predict Admission - College Predictor{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/predict.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="predict-container">
+    <h2 class="mb-4">Predict Admission Probability</h2>
+    
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+        <div class="step active" id="step1-indicator">
+            <div class="step-number">1</div>
+            <div>Rank & Exam</div>
+        </div>
+        <div class="step" id="step2-indicator">
+            <div class="step-number">2</div>
+            <div>College</div>
+        </div>
+        <div class="step" id="step3-indicator">
+            <div class="step-number">3</div>
+            <div>Category & Branch</div>
+        </div>
+    </div>
+    
+    <form method="POST" class="prediction-form" id="predictionForm">
+        <!-- Step 1: Rank and Exam -->
+        <div class="form-step active" id="step1">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="rankInput">Rank</label>
+                    <input type="number" class="form-control" name="rank" required min="1" 
+                           value="{{ request.form.rank if request.method == 'POST' }}" id="rankInput">
+
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label" for="examSelect">Exam</label>
+                    <select class="form-control" name="exam" required id="examSelect">
+
+                        <option value="">Select Exam</option>
+                        <option value="AP" {% if request.method == 'POST' and request.form.exam == 'AP' %}selected{% endif %}>AP EAMCET</option>
+                        <option value="TS" {% if request.method == 'POST' and request.form.exam == 'TS' %}selected{% endif %}>TS EAMCET</option>
+                        <option value="JEE" {% if request.method == 'POST' and request.form.exam == 'JEE' %}selected{% endif %}>GATE</option>
+                    </select>
+                </div>
+            </div>
+            <div class="navigation-buttons">
+                <div></div> <!-- Empty div for spacing -->
+                <button type="button" class="btn btn-primary" onclick="nextStep(1)">Next →</button>
+            </div>
+        </div>
+
+        <!-- Step 2: College Selection -->
+        <div class="form-step" id="step2">
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label" for="collegeInput">College Name</label>
+                    <div class="college-search-container">
+
+                        <input type="text" class="form-control" name="college" required 
+                               placeholder="Start typing college name..."
+                               value="{{ request.form.college if request.method == 'POST' }}" 
+                               id="collegeInput" autocomplete="off">
+                        <div class="loading-spinner" id="collegeLoading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </div>
+                        <div id="collegeAutocompleteList" class="autocomplete-items"></div>
+                    </div>
+                    <div class="dropdown-help text-muted mt-1">
+                        <span id="collegeHelp">Type 2+ characters to see college suggestions</span>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation-buttons">
+                <button type="button" class="btn btn-secondary" onclick="prevStep(2)">← Back</button>
+                <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next →</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Category and Branch -->
+        <div class="form-step" id="step3">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="categorySelect">Category</label>
+                    <select class="form-control" name="category" required id="categorySelect">
+
+                        <option value="">Select College First</option>
+                        {% if request.method == 'POST' and request.form.category %}
+                            <option value="{{ request.form.category }}" selected>{{ request.form.category }}</option>
+                        {% endif %}
+                    </select>
+                    <div class="dropdown-help text-muted mt-1">
+                        <span id="categoryHelp">Select college to see available categories</span>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <label class="form-label" for="branchSelect">Branch</label>
+                    <select class="form-control" name="branch" required id="branchSelect">
+
+                        <option value="">Select Category First</option>
+                        {% if request.method == 'POST' and request.form.branch %}
+                            <option value="{{ request.form.branch }}" selected>{{ request.form.branch }}</option>
+                        {% endif %}
+                    </select>
+                    <div class="dropdown-help text-muted mt-1">
+                        <span id="branchHelp">Select category to see available branches</span>
+                    </div>
+                </div>
+            </div>
+            <div class="navigation-buttons">
+                <button type="button" class="btn btn-secondary" onclick="prevStep(3)">← Back</button>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-chart-line"></i> Predict Admission Chance
+                </button>
+            </div>
+        </div>
+    </form>
+
+    {% if result %}
+        <div class="prediction-result mt-4">
+            <div class="result-card {% if result.admit %}result-success{% else %}result-danger{% endif %}">
+                <h4><i class="fas fa-chart-bar"></i> Prediction Result</h4>
+                
+                {% if result.error %}
+                    <div class="alert alert-warning">
+                        <h5><i class="fas fa-exclamation-triangle"></i> Prediction Failed</h5>
+                        <p>{{ result.error }}</p>
+                        <p class="mb-0"><small>Try checking the college name spelling or try a different college.</small></p>
+                    </div>
+                {% else %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="probability-display">
+                                <h5>Admission Chance: <span class="probability-value">{{ result.probability }}%</span></h5>
+                                <p><strong>College Used:</strong> {{ result.college_used }}</p>
+                                <p><strong>Prediction:</strong> 
+                                    <span class="badge {% if result.admit %}badge-success{% else %}badge-warning{% endif %}">
+                                        {{ "Likely to get admission ✅" if result.admit else "Unlikely to get admission ❌" }}
+                                    </span>
+                                </p>
+                                <p><strong>Message:</strong> {{ result.message }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="details-section">
+                                <h6><i class="fas fa-info-circle"></i> Details:</h6>
+                                <p><strong>Estimated Cutoff:</strong> {{ result.cutoff_found }}</p>
+                                <p><strong>Rank Ratio:</strong> {{ result.rank_ratio }} 
+                                    <small class="text-muted">(Your Rank / Cutoff)</small>
+                                </p>
+                                <p><strong>Data Quality:</strong> 
+                                    <span class="badge {% if result.data_quality == 'exact' %}badge-success{% else %}badge-warning{% endif %}">
+                                        {{ result.data_quality|upper }}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="interpretation-guide mt-3">
+                        <small>
+                            <strong><i class="fas fa-lightbulb"></i> How to interpret:</strong><br>
+                            • < 50%: Low chance | • 50-70%: Moderate chance | • > 70%: High chance<br>
+                            • Rank Ratio < 1.0: Your rank is better than cutoff | > 1.0: Cutoff is better than your rank
+                        </small>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+    
+    <a href="/" class="btn btn-secondary mt-3">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/predict.js') }}"></script>
+{% endblock %}

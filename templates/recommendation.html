@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}College Recommendations - Predictor{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/recommendation.css') }}">
+<style>
+    .branch-fullform {
+        font-size: 0.8rem;
+        color: #6c757d;
+        font-style: italic;
+        margin-left: 5px;
+    }
+    .dropdown-help {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+    /* FIX: Force dropdown to open below */
+    select.form-control {
+        position: static !important;
+        transform: none !important;
+        z-index: auto !important;
+    }
+    .col-md-6 {
+        position: static !important;
+        z-index: auto !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="recommendation-container">
+    <h2 class="mb-4">Get College Recommendations</h2>
+    
+    <form method="POST" class="recommendation-form" id="recommendationForm">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Rank</label>
+                <input type="number" class="form-control" name="rank" required min="1" 
+                       value="{{ request.form.rank if request.method == 'POST' }}">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Exam</label>
+                <select class="form-control" name="exam" required id="examSelect">
+                    <option value="">Select Exam</option>
+                    <option value="AP" {% if request.method == 'POST' and request.form.exam == 'AP' %}selected{% endif %}>AP EAMCET</option>
+                    <option value="TS" {% if request.method == 'POST' and request.form.exam == 'TS' %}selected{% endif %}>TS EAMCET</option>
+                    <option value="JEE" {% if request.method == 'POST' and request.form.exam == 'JEE' %}selected{% endif %}>GATE</option>
+                </select>
+            </div>
+            
+            <!-- Dynamic Category Dropdown -->
+            <div class="col-md-6" style="position: static !important; z-index: auto !important;">
+                <label class="form-label">Category</label>
+                <select class="form-control" name="category" required id="categorySelect" style="position: static !important; transform: none !important; z-index: auto !important;">
+                    <option value="">First select Exam</option>
+                    {% if request.method == 'POST' and request.form.category %}
+                        <option value="{{ request.form.category }}" selected>{{ request.form.category }}</option>
+                    {% endif %}
+                </select>
+                <div class="dropdown-help text-muted mt-1">
+                    <span id="categoryHelp">Select exam first to see available categories</span>
+                </div>
+            </div>
+            
+            <!-- Dynamic Branch Dropdown with Full Forms -->
+            <div class="col-md-6" style="position: static !important; z-index: auto !important;">
+                <label class="form-label">Branch</label>
+                <select class="form-control" name="branch" required id="branchSelect" style="position: static !important; transform: none !important; z-index: auto !important;">
+                    <option value="">First select Exam</option>
+                    {% if request.method == 'POST' and request.form.branch %}
+                        <option value="{{ request.form.branch }}" selected>{{ request.form.branch }}</option>
+                    {% endif %}
+                </select>
+                <div class="dropdown-help text-muted mt-1">
+                    <span id="branchHelp">Select exam first to see available branches</span>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-success btn-recommend mt-3">
+            <i class="fas fa-university"></i> Get Recommendations
+        </button>
+    </form>
+
+    {% if recommendations %}
+        <div class="recommendations-results mt-4">
+            <h4>College Recommendations for Rank {{ request.form.rank }}</h4>
+            
+            {% if recommendations[0].error %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle"></i> {{ recommendations[0].error }}
+                </div>
+            {% else %}
+                <div class="table-container">
+                    <h5><strong>Top {{ recommendations|length }} Colleges</strong> (Rank {{ request.form.rank }})</h5>
+                    <table class="table table-hover recommendation-table">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>College</th>
+                                <th>Category</th>
+                                <th>Cutoff</th>
+                                <th>Rank Diff</th>
+                                <th>Probability</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rec in recommendations %}
+                            <tr class="recommendation-row">
+                                <td>{{ loop.index }}</td>
+                                <td class="college-name" title="{{ rec.college }}">{{ rec.college[:60] }}{% if rec.college|length > 60 %}...{% endif %}</td>
+                                <td>
+                                    <span class="category-badge 
+                                        {% if rec.category == 'Very Safe' %}category-very-safe
+                                        {% elif rec.category == 'Safe Bet' %}category-safe
+                                        {% elif rec.category == 'Good Match' %}category-good
+                                        {% elif rec.category == 'Ambitious' %}category-ambitious
+                                        {% elif rec.category == 'Very Ambitious' %}category-very-ambitious
+                                        {% else %}category-highly-ambitious{% endif %}">
+                                        {{ rec.category }}
+                                    </span>
+                                </td>
+                                <td class="cutoff-value">{{ "%.0f"|format(rec.cutoff) }}</td>
+                                <td class="rank-difference {{ 'positive' if rec.rank_difference > 0 else 'negative' }}">
+                                    {{ rec.rank_difference|abs }} {{ '↑' if rec.rank_difference > 0 else '↓' }}
+                                </td>
+                                <td>
+                                    <div class="probability-badge prob-high">{{ rec.probability }}%</div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="count-info mt-2">
+                        <strong>Showing {{ recommendations|length }} colleges</strong>
+                    </div>
+                </div>
+                
+                <!-- Category Explanation -->
+                <div class="category-explanation mt-4">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="explanation-card very-safe-card">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-shield-alt"></i> Very Safe</h6>
+                                    <p class="mb-0">Your rank is much better than cutoff. Very high admission probability (95-98%).</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="explanation-card safe-card">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-check-circle"></i> Safe Bet</h6>
+                                    <p class="mb-0">Your rank is significantly better than cutoff. High admission probability (90-95%).</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="explanation-card good-card">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-balance-scale"></i> Good Match</h6>
+                                    <p class="mb-0">Your rank is slightly better than cutoff. Good admission probability (80-90%).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <div class="explanation-card ambitious-card">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-rocket"></i> Ambitious</h6>
+                                    <p class="mb-0">Your rank is slightly below cutoff. Moderate admission probability (50-80%).</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="explanation-card very-ambitious-card">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-bullseye"></i> Very Ambitious</h6>
+                                    <p class="mb-0">Your rank is moderately below cutoff. Low admission probability (20-50%).</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="explanation-card highly-ambitious-card">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-star"></i> Highly Ambitious</h6>
+                                    <p class="mb-0">Your rank is much below cutoff. Very low admission probability (1-20%).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+    
+    <a href="/" class="btn btn-secondary mt-3">
+        <i class="fas fa-arrow-left"></i> Back to Home
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/recommendation.js') }}"></script>
+{% endblock %}
